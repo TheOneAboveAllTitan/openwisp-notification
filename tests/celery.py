@@ -5,9 +5,9 @@ import os
 from celery import Celery
 from django.conf import settings
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'openwisp2.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'openwisp_notifications.settings')
 
-app = Celery('openwisp2')
+app = Celery('openwisp_notifications')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 app.config_from_object('django.conf:settings', namespace='CELERY')

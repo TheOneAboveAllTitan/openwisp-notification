@@ -1,21 +1,17 @@
 import os
 import sys
 
-import environ
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-TESTING = sys.argv[1] == 'test'
-
-root = environ.Path(__file__) - 2
-env = environ.Env(DEBUG=(bool, False))
-environ.Env.read_env()
 
 DEBUG = True
 
 ALLOWED_HOSTS = []
 
 DATABASES = {
-    'default': env.db(default='sqlite:///django-freeradius.db'),
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'openwisp_notfications.db')
+    }
 }
 
 SECRET_KEY = 'fn)t*+$)ugeyip6-#txyy$5wf2ervc0d2n#h)qb)y5@ly$t*@w'
@@ -26,23 +22,35 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'openwisp_utils.admin_theme',
+    'openwisp_notifications.apps.OpenwispNotificationsConfig',
+    # 'django.contrib.sites',
+    
+ 
+
+
+    # 'openwisp_utils.admin_theme',
     'django.contrib.admin',
-    'django_freeradius',
-    'rest_framework',
-    'django_filters',
-    'django_extensions',
-    # registration
-    'rest_framework.authtoken',
-    'rest_auth',
+    # 'django_filters',
+    # 'django_extensions',
+    # admin theme
+    'openwisp_utils.admin_theme',
+    'notifications',
+    # 'rest_framework',
     'django.contrib.sites',
+    'django_extensions',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'rest_auth.registration',
-    'allauth.socialaccount.providers.facebook',
+    'openwisp_users',
 ]
 
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'openwisp_utils.staticfiles.DependencyFinder',
+]
+
+AUTH_USER_MODEL = 'openwisp_users.User'
 SITE_ID = 1
 
 MIDDLEWARE = [
@@ -65,14 +73,15 @@ USE_L10N = False
 STATIC_URL = '/static/'
 CORS_ORIGIN_ALLOW_ALL = True
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-EMAIL_PORT = '1025'
 MEDIA_URL = '/media/'
+EMAIL_PORT = '1025'
+
 
 # during development only
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # change this to something secret in production
-DJANGO_FREERADIUS_API_TOKEN = 'djangofreeradiusapitoken'
+# DJANGO_FREERADIUS_API_TOKEN = 'djangofreeradiusapitoken'
 
 TEMPLATES = [
     {
@@ -95,63 +104,48 @@ TEMPLATES = [
 ]
 
 
-STATICFILES_FINDERS = [
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'openwisp_utils.staticfiles.DependencyFinder',
-]
+# LOGGING = {
+#     'version': 1,
+#     'filters': {
+#         'require_debug_true': {
+#             '()': 'django.utils.log.RequireDebugTrue',
+#         }
+#     },
+#     'handlers': {
+#         'console': {
+#             'level': 'DEBUG',
+#             'filters': ['require_debug_true'],
+#             'class': 'logging.StreamHandler',
+#         }
+#     },
+#     'loggers': {
+#         'django.db.backends': {
+#             'level': 'DEBUG',
+#             'handlers': ['console'],
+#         }
+#     }
+# }
 
-LOGGING = {
-    'version': 1,
-    'filters': {
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue',
-        }
-    },
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'filters': ['require_debug_true'],
-            'class': 'logging.StreamHandler',
-        }
-    },
-    'loggers': {
-        'django.db.backends': {
-            'level': 'DEBUG',
-            'handlers': ['console'],
-        }
-    }
-}
-
-SOCIALACCOUNT_PROVIDERS = {
-    'facebook': {
-        'METHOD': 'oauth2',
-        'SCOPE': ['email', 'public_profile'],
-        'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
-        'INIT_PARAMS': {'cookie': True},
-        'FIELDS': [
-            'id',
-            'email',
-            'name',
-            'first_name',
-            'last_name',
-            'verified',
-        ],
-        'VERIFIED_EMAIL': True,
-    }
-}
+# SOCIALACCOUNT_PROVIDERS = {
+#     'facebook': {
+#         'METHOD': 'oauth2',
+#         'SCOPE': ['email', 'public_profile'],
+#         'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
+#         'INIT_PARAMS': {'cookie': True},
+#         'FIELDS': [
+#             'id',
+#             'email',
+#             'name',
+#             'first_name',
+#             'last_name',
+#             'verified',
+#         ],
+#         'VERIFIED_EMAIL': True,
+#     }
+# }
 ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = False
 
 
-
-if TESTING:
-    DJANGO_FREERADIUS_GROUPCHECK_ADMIN = True
-    DJANGO_FREERADIUS_GROUPREPLY_ADMIN = True
-    DJANGO_FREERADIUS_USERGROUP_ADMIN = True
-
-DJANGO_FREERADIUS_EXTRA_NAS_TYPES = (
-    ('cisco', 'Cisco Router'),
-)
 
 # local settings must be imported before test runner otherwise they'll be ignored
 try:

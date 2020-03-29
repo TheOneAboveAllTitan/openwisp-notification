@@ -1,13 +1,13 @@
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
-
-from openwisp_users.admin import UserAdmin
+# from allauth.account.admin
+# from openwisp_users.admin import UserAdmin
 from openwisp_utils.admin import AlwaysHasChangedMixin
 
-from .models import Notification, NotificationUser
+from .models import Notifications, NotificationUser
 
 
-@admin.register(Notification)
+@admin.register(Notifications)
 class NotificationAdmin(admin.ModelAdmin):
     raw_id_fields = ('recipient', )
     list_display = ('description', 'read', 'level', 'timesince')
@@ -80,5 +80,5 @@ class NotificationUserInline(AlwaysHasChangedMixin, admin.StackedInline):
     fields = ('receive', 'email')
 
 
-UserAdmin.inlines.insert(len(UserAdmin.inlines) - 1,
-                         NotificationUserInline)
+# UserAdmin.inlines.insert(len(UserAdmin.inlines) - 1,
+#                          NotificationUserInline)

@@ -2,7 +2,7 @@
 import os
 import sys
 
-from openwisp_notification import get_version
+from openwisp_notifications import get_version
 from setuptools import find_packages, setup
 
 
