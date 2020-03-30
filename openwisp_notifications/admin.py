@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
+
 # from allauth.account.admin
 # from openwisp_users.admin import UserAdmin
 from openwisp_utils.admin import AlwaysHasChangedMixin
@@ -44,7 +45,7 @@ class NotificationAdmin(admin.ModelAdmin):
             bit = '{0} notifications were'.format(result)
         message = '{0} marked as read.'.format(bit)
         self.message_user(request, _(message))
-        Notification.invalidate_cache(request.user)
+        Notifications.invalidate_cache(request.user)
 
     mark_as_read.short_description = _('Mark selected notifications as read')
 
