@@ -2,13 +2,15 @@ from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
 # from allauth.account.admin
-# from openwisp_users.admin import UserAdmin
+from openwisp_users.admin import UserAdmin
 from openwisp_utils.admin import AlwaysHasChangedMixin
 
-from .models import Notifications, NotificationUser
+from .models import NotificationUser
+from swapper import load_model
 
+Notification = load_model('openwisp_notifications', 'Notification')
 
-@admin.register(Notifications)
+@admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):
     raw_id_fields = ('recipient', )
     list_display = ('description', 'read', 'level', 'timesince')
@@ -27,7 +29,8 @@ class NotificationAdmin(admin.ModelAdmin):
     )
 
     class Media:
-        js = ('notifications/js/notifications.js',)
+        extend = True
+        js =  ['openwisp_notifications/js/notifications.js',]
 
     def read(self, instance):
         return not instance.unread
@@ -45,7 +48,7 @@ class NotificationAdmin(admin.ModelAdmin):
             bit = '{0} notifications were'.format(result)
         message = '{0} marked as read.'.format(bit)
         self.message_user(request, _(message))
-        Notifications.invalidate_cache(request.user)
+        Notification.invalidate_cache(request.user)
 
     mark_as_read.short_description = _('Mark selected notifications as read')
 
@@ -81,5 +84,5 @@ class NotificationUserInline(AlwaysHasChangedMixin, admin.StackedInline):
     fields = ('receive', 'email')
 
 
-# UserAdmin.inlines.insert(len(UserAdmin.inlines) - 1,
-#                          NotificationUserInline)
+UserAdmin.inlines.insert(len(UserAdmin.inlines) - 1,
+                         NotificationUserInline)
